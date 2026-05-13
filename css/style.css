@@ -1,0 +1,802 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.layout {
+  display: grid;
+  /*grid-template-columns: 1fr 2fr 190px;*/
+  grid-template-columns: 350px 1fr 190px; 
+  gap: 16px;
+  padding: 16px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* --- AJUSTE PARA CELULAR (Telas menores que 900px) --- */
+@media (max-width: 900px) {
+  .layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .coluna {
+    width: 100%;
+    /* Permite que o mapa transborde com scroll sem quebrar os 32px */
+    overflow-x: auto; 
+    overflow-y: hidden;
+    display: block;
+  }
+
+  #conteudo {
+    width: 100%;
+    display: block;
+  }
+
+
+  /* FORÇA OS BOTÕES LADO A LADO */
+  .acoes {
+    display: grid !important; /* Força o uso de grid */
+    /* Cria duas colunas iguais. Se quiser 3 colunas, mude para repeat(3, 1fr) */
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 8px !important;
+    max-width: none !important; /* Remove o limite de 160px do PC */
+    width: 100% !important;
+  }
+
+  /* Faz o botão Desfazer (ou o último) ocupar a linha toda se sobrar */
+  #btn-desfazer {
+    grid-column: span 1; /* Ou span 2 se quiser que ele fique sozinho na linha de baixo */
+  }
+
+  .acoes button {
+    width: 100% !important;
+    height: 50px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  /* O container do Zoom também deve ficar lado a lado */
+  .acoes-zoom {
+    grid-column: span 2; /* Ocupa a largura total da grade de botões */
+    display: flex !important;
+    gap: 4px;
+  }
+}
+
+.coluna {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+#lista-suspeitos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 100px));
+  gap: 8px;
+}
+
+.suspeito-card {
+  width: 100px;
+  border: 2px solid #bcbcbc;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.suspeito-card.selecionado {
+  border-color: #76c7ff;
+}
+
+.suspeito-card.inativo {
+  filter: grayscale(1) brightness(0.65);
+  cursor: default;
+}
+
+.suspeito-card.inativo.selecionado {
+  border-color: #bcbcbc;
+}
+
+.suspeito-card img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+}
+
+.suspeito-nome {
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.suspeito-dica {
+  margin-top: 4px;
+  font-size: 11px;
+}
+/* Destaca as tags <b> dentro da dica do card */
+.suspeito-dica b {
+  color: #000; /* Garante que o texto seja preto puro */
+  font-weight: 900; /* Peso máximo da fonte */
+  /*text-decoration: underline;  Opcional: sublinha para dar mais ênfase */
+  /*background-color: rgba(255, 255, 0, 0.2);  Opcional: um leve fundo amarelo estilo marca-texto */
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 160px;
+}
+
+button {
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.acoes .ativo {
+  border: 2px solid #76c7ff;
+  background: #eaf6ff;
+}
+
+/*
+.acoes-zoom button {
+  flex: 1;
+  padding: 8px 6px;  
+}
+*/
+.acoes-zoom {
+  display: flex;
+  width: 100%;
+  gap: 4px; 
+}
+/* Faz APENAS o botão do meio (100%) crescer */
+.acoes-zoom button:nth-child(2) {
+  flex: 1;
+}
+.acoes-zoom button {
+  flex: none;
+  padding: 8px 6px;
+}
+
+
+table {
+  border-collapse: collapse;
+}
+
+#grade {
+/*  
+  width: auto; 
+*/
+/*
+  border-collapse: collapse;
+  table-layout: fixed; 
+  width: auto; 
+  min-width: auto;
+*/
+  border-collapse: collapse;  
+  table-layout: fixed; 
+  width: auto !important; 
+  min-width: fit-content !important;  
+}
+
+td {
+  /* border passou a ser controlado pelo js */
+  /* border: 2px solid #000; */
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+  overflow: hidden;
+}
+
+#grade td {
+  background-size: cover;
+  background-position: center;
+
+  /* Garante o formato quadrado custe o que custar */
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  box-sizing: border-box;  
+}
+
+#grade td .cell-item {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+}
+
+#grade td .cell-marcado {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  z-index: 3;
+}
+
+#grade td .cell-notas {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 1px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 1px 2px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+#grade td .cell-nota {
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+#grade td .cell-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  text-shadow:
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000,
+    0 -2px 0 #000,
+    0 2px 0 #000,
+    -2px 0 0 #000,
+    2px 0 0 #000;
+}
+
+#grade td.selecionada::after {
+  content: "";
+  position: absolute;
+  inset: 0; /* Ocupa a célula toda */
+  border: 1px solid rgb(0, 255, 255);
+  pointer-events: none; /* Garante que o clique passe através dela */
+  z-index: 99; /* Fica acima de imagens, notas e textos */
+}
+#grade td.selbloqueada::after { /*quando uma cpelula está selecionada mas nao pode ser ocupada*/
+  content: "";
+  position: absolute;
+  inset: 0; /* Ocupa a célula toda */
+  border: 1px solid rgb(255, 0, 0);
+  pointer-events: none; /* Garante que o clique passe através dela */
+  z-index: 99; /* Fica acima de imagens, notas e textos */
+}
+
+/* Ajuste o layout pai para lidar com a coluna sumindo */
+.layout.sem-suspeitos {
+  /*grid-template-columns: 0px 2fr 190px;*/
+  grid-template-columns: 0px 1fr 190px;
+  gap: 8px; /* Opcional: remove o gap para não sobrar espaço vazio */
+}
+
+/* Quando a coluna de suspeitos tiver essa classe, ela some */
+#personagens.recolhido {
+  display: none;
+}
+
+.seletor-cena {
+  display: flex;
+  flex-direction: column; 
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.seletor-cena label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+#select-cena {
+  width: 100%; 
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  box-sizing: border-box; 
+}
+
+#personagens h1 {
+  font-size: 20px; 
+  margin: 15px 0 10px 0;
+  color: #333;
+  border-bottom: 2px solid #eee; 
+  padding-bottom: 5px;
+}
+
+.editor-controle-dimensao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.numero-input-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.numero-input-container input {
+  width: 50px;
+  text-align: center;
+  padding: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9; /* Tom levemente cinza para indicar que não é editável */
+}
+
+.numero-input-container button {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+/* Remove as setinhas padrão do navegador para ficar mais limpo */
+#input-dimensao::-webkit-inner-spin-button,
+#input-dimensao::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+#tabela-editor-suspeitos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  table-layout: auto; /* Garante que as larguras de TD sejam respeitadas */
+}
+
+#tabela-editor-suspeitos td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: top;
+}
+
+#tabela-editor-suspeitos td:first-child {
+  width: 1%;
+  white-space: nowrap;
+  padding: 8px;
+}
+#tabela-editor-suspeitos td:last-child {
+  width: 100%;
+  padding: 8px;
+}
+
+.editor-foto {
+  width: 60px;
+  height: 60px;
+  display: block;
+  cursor: pointer;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.editor-nome {  
+  cursor: pointer;  
+  color: #333;
+  display: block;
+  width: 100%;
+  text-align: left; 
+  font-weight: bold;
+  margin-bottom: 5px;
+  padding-left: 2px;
+}
+
+.editor-dica-memo {
+  /*display: block;*/
+  /*font-weight: bold;
+  margin-bottom: 5px;*/
+  width: 100%;
+  height: 45px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+  text-align: left; /* Garante alinhamento à esquerda */
+  padding: 4px;  
+}
+
+
+#container-select-editor {
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+#select-cena-editor, #input-nome-cena {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.wrapper-editor-nome {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#btn-editar-nome {
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.editor-acoes-final {
+  margin-top: 20px;
+  padding: 10px;
+  border-top: 1px solid #eee;
+}
+
+#btn-salvar-cena {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#btn-salvar-cena:hover {
+  background-color: #218838;
+}
+
+/* Estilo para quando for edição */
+#btn-salvar-cena.modo-edicao {
+  background-color: #007bff;
+}
+
+#conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza a grade e os botões */
+  gap: 15px;
+}
+
+.acoes-grade {
+  display: flex;
+  /*width: 100%;*/
+  width: fit-content; 
+  /*max-width: 400px;  Limita a largura para não ficarem esticados demais */
+  gap: 10px;
+}
+
+.acoes-grade button {
+  /*flex: 1;  Faz os 3 botões terem o mesmo tamanho */
+  padding: 8px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#editor-grade {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  box-sizing: border-box;
+  display: none;
+}
+
+.seletor-editor-grade {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#select-acao-grade, #select-ambiente-editor, #input-novo-ambiente {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* Quando este modo está ativo, as telhas bloqueadas ganham um fade */
+#grade.modo-visualizar-interdicao {
+  /* filter: brightness(0.8) grayscale(0.5); */
+  transition: filter 0.2s;
+}
+#grade.modo-visualizar-interdicao td.telha-bloqueada {
+  filter: brightness(0.7) grayscale(0.3);
+  transition: filter 0.3s ease;
+}
+#grade.modo-visualizar-interdicao td:not(.telha-bloqueada) {
+  filter: brightness(1); 
+}
+
+#editor-grade-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: flex-start;
+}
+
+.btn-piso-seletor, .btn-item-seletor {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.btn-piso-seletor.ativo, .btn-item-seletor.ativo {
+  border-color: #76c7ff;
+  box-shadow: 0 0 5px rgba(118, 199, 255, 0.8);
+}
+
+#conteudo > div {
+  /* 
+  position: relative; 
+  display: inline-block; 
+  */
+  /*
+  overflow: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;  
+  */
+  /*
+  position: relative; 
+  display: block; 
+  width: fit-content;
+  margin: 0 auto; 
+  */
+  position: relative; 
+  display: block; 
+  width: fit-content; /* Impede que o container se expanda além da tabela */
+  margin: 0 auto;  
+}
+
+.legenda-ambiente {
+  position: absolute;
+  z-index: 100; /* Acima de tudo (X, notas, itens) */
+  font-size: 11px;
+  font-weight: 900; /* Máximo de negrito */
+  color: white;
+  /*text-shadow: 1px 1px 2px black;*/
+  pointer-events: none; /* O clique passa para a telha abaixo */
+  white-space: nowrap;
+  padding-left: 2px;
+  line-height: 1;  
+  text-transform: uppercase;
+  /* Contorno sólido preto */
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000,
+     2px  2px 4px rgba(0,0,0,0.8); /* Sombra suave externa */
+}
+
+.checkbox-editor-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+#tabela-gerenciar-ambientes {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Permite que as colunas se ajustem ao conteúdo */
+}
+
+/* Coluna do ID e Coluna do Botão: Ajustam ao conteúdo */
+#tabela-gerenciar-ambientes td:first-child,
+#tabela-gerenciar-ambientes td:last-child {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+    padding: 4px 10px;
+}
+
+/* Coluna do Nome: Ocupa o espaço restante */
+#tabela-gerenciar-ambientes td:nth-child(2) {
+    width: 100%;
+    text-align: left;
+    padding: 4px 8px;
+}
+
+#tabela-gerenciar-ambientes td {
+  padding: 4px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+#tabela-gerenciar-ambientes button {
+  padding: 2px 8px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.input-nome-ambiente-tabela {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 4px;
+  font-family: inherit;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.input-nome-ambiente-tabela:hover {
+  border-color: #ddd;
+  background: #fff;
+}
+
+.input-nome-ambiente-tabela:focus {
+  border-color: #76c7ff;
+  background: #fff;
+  outline: none;
+}
+
+#grade td.ambiente-realçado::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.70);
+  pointer-events: none;
+  z-index: 1; /* Fica acima do piso, mas abaixo de itens/notas */
+}
+
+#container-editor-suspeitos {
+  display: none;
+}
+
+/* Garante que a coluna de ações organize os containers verticalmente */
+#acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espaço entre o bloco comum e o bloco do editor */
+}
+
+/* Faz o botão do editor ocupar toda a largura disponível, como os outros */
+#container-acoes-editor {
+  display: flex;
+  width: 100%;
+}
+
+#btn-editor {
+  flex: 1; /* Faz o botão esticar */
+  padding: 10px; /* Mantém o padding padrão que você já usa */
+}
+
+.topo-app {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #333;
+  color: white;
+  font-size: 14px;
+}
+
+.usuario-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.usuario-info a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.divisor {
+  color: #666;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.campo {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label { font-size: 12px; margin-bottom: 4px; font-weight: bold; }
+
+.campo input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+.modal-acoes { display: flex; gap: 10px; margin-top: 20px; }
+
+.modal-acoes button { flex: 1; padding: 10px; cursor: pointer; border-radius: 4px; border: none; }
+
+#btn-voltar-senha { background: #eee; }
+
+#btn-confirmar-senha { 
+  background: #007bff; color: white; 
+  display: flex; align-items: center; justify-content: center; 
+}
+
+/* Spinner Simples */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#loading-overlay .spinner {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quem foi?</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="display: none;">
+
+  <header class="topo-app">
+    <div id="cronometro">00:00</div>
+    <div class="usuario-info">
+      <span id="btn-mudar-senha">🔑</span>
+      <span id="nome-usuario">Buscando...</span>
+      <span class="divisor">|</span>
+      <a href="#" id="btn-sair">Sair</a>
+    </div>
+  </header>
+
+  <div id="loading-overlay" class="modal-overlay" style="display: none; flex-direction: column; gap: 15px;">
+    <div class="spinner"></div>
+    <span style="color: white; font-weight: bold; font-family: sans-serif;">Carregando...</span>
+  </div>  
+
+  <div class="layout">
+    <section class="coluna" id="personagens">
+      <div id="container-suspeitos">
+        <div class="seletor-cena">
+          <label for="select-cena">Cena:</label>
+          <select id="select-cena">
+            <option value="abcd-123">Conserto</option>
+            <option value="efgh-456">Escritório</option>
+            <option value="ijkl-789">Pizzaria</option>
+          </select>        
+
+          <p id="campo-dica" style="font-style: italic; color: #666; margin: 10px 0; font-size: 14px;"></p>
+
+          <h1>Suspeitos</h1>
+          <div id="lista-suspeitos"></div>
+        </div>               
+      </div>
+      <div id="container-editor-suspeitos" style="display: none;">
+
+        <div id="container-select-editor">
+          <!--
+          <label for="select-cena-editor">Cena:</label>
+          <div class="wrapper-editor-nome">
+            <select id="select-cena-editor">
+              <option value="-1">Construir Nova Cena</option>              
+            </select>
+            <input type="text" id="input-nome-cena" placeholder="Nome da nova cena..." style="display: none;">
+            <button type="button" id="btn-editar-nome">✎</button>
+          </div>
+          -->
+          <label for="input-nome-cena">Cena:</label>
+          <div class="wrapper-editor-nome">            
+            <input type="text" id="input-nome-cena" placeholder="Nome da nova cena...">            
+          </div>          
+        </div>   
+
+        <div class="editor-controle-dimensao">
+          <label for="input-dimensao">Total de Personagens:</label>
+          <div class="numero-input-container">
+            <button type="button" id="btn-dim-down">-</button>
+            <input type="number" id="input-dimensao" value="6" readonly>
+            <button type="button" id="btn-dim-up">+</button>
+          </div>
+        </div>
+        <div style="margin-top: 10px;">
+          <label for="input-dica-cena" style="font-weight: bold; font-size: 14px;">Dica do Cenário:</label>
+          <textarea id="input-dica-cena" style="width: 100%; height: 60px; margin-top: 5px; resize: vertical; box-sizing: border-box;"></textarea>
+        </div>        
+        <div class="editor-lista-container">
+          <table id="tabela-editor-suspeitos">
+            <!-- Será preenchido pelo JS -->
+          </table>
+        </div>    
+        <div class="editor-acoes-final">
+          <button type="button" id="btn-salvar-cena">Cadastrar Nova Cena</button>
+        </div>            
+
+      </div>
+    </section>
+
+    <section class="coluna" id="conteudo"> 
+      <div>
+        <table id="grade"></table>
+      </div>  
+      <div class="acoes-grade" id="btn-acoes-grade">
+        <button type="button" id="btn-grade-limpar">Reiniciar</button>
+        <button type="button" id="btn-grade-carregar">Carregar</button>
+        <button type="button" id="btn-grade-salvar">Salvar</button>
+      </div>
+      <div id="editor-grade" style="display: none;">
+        <div class="seletor-editor-grade">
+          <label for="select-acao-grade">Ação do Editor:</label>
+          <select id="select-acao-grade">
+            <option value="-1">Selecione uma ação</option>
+            <option value="0">Marcar Telha Interditada</option>
+            <option value="1">Ladrilhar</option>
+            <option value="2">Posicionar Elementos</option>
+            <option value="3">Definir Ambiente</option>
+            <option value="4">Gerenciar Ambientes</option>
+          </select>
+        </div>
+        <div id="editor-grade-acoes" style="margin-top: 10px;">
+
+        </div>
+      </div>
+    </section>
+
+    <section class="coluna" id="acoes">      
+      <div class="acoes" id="container-acoes-comuns">        
+        <button type="button" id="btn-marcar">Marcar</button>
+        <button type="button" id="btn-definir">Definir</button>
+        <button type="button" id="btn-limpar">Limpar</button>
+        <button type="button" id="btn-desfazer">Desfazer</button>
+        <!--
+        <div class="acoes-zoom" style="display: none;">
+          <button type="button" id="btn-zoom-out">-</button>
+          <button type="button" id="btn-zoom-restore">100%</button>
+          <button type="button" id="btn-zoom-in">+</button>
+        </div>        
+        -->
+      </div>
+      <div id="container-acoes-editor">
+          <button type="button" id="btn-editor">Editor</button>
+      </div>        
+    </section>
+  </div>
+
+  <div id="modal-senha" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Alterar Senha</h3>
+      <form id="form-alterar-senha">
+        <div class="campo">
+          <label for="senha-atual">Senha Atual:</label>
+          <input type="password" id="senha-atual" required>
+        </div>
+        <div class="campo">
+          <label for="senha-nova">Nova Senha:</label>
+          <input type="password" id="senha-nova" required minlength="6">
+        </div>
+        <div class="campo">
+          <label for="senha-confirma">Confirme a Nova Senha:</label>
+          <input type="password" id="senha-confirma" required minlength="6">
+        </div>
+        <div class="modal-acoes">
+          <button type="button" id="btn-voltar-senha">Voltar</button>
+          <button type="submit" id="btn-confirmar-senha">
+            <span class="btn-texto">Alterar</span>
+            <div class="spinner" style="display: none;"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/common.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
