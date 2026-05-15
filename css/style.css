@@ -6,11 +6,13 @@ body {
 .layout {
   display: grid;
   /*grid-template-columns: 1fr 2fr 190px;*/
-  grid-template-columns: 350px 1fr 190px; 
+  /*grid-template-columns: 350px 1fr 190px; */
+  grid-template-columns: 350px 1fr max-content; 
   gap: 16px;
   padding: 16px;
   min-height: 100vh;
   box-sizing: border-box;
+  
 }
 
 /* --- AJUSTE PARA CELULAR (Telas menores que 900px) --- */
@@ -37,12 +39,19 @@ body {
 
   /* FORÇA OS BOTÕES LADO A LADO */
   .acoes {
-    display: grid !important; /* Força o uso de grid */
+    /*display: grid !important; Força o uso de grid */
+    display: flex !important;
     /* Cria duas colunas iguais. Se quiser 3 colunas, mude para repeat(3, 1fr) */
-    grid-template-columns: repeat(2, 1fr) !important; 
+    /*grid-template-columns: repeat(2, 1fr) !important; */
+    flex-direction: row !important;
+    justify-content: center;
+    /*width: fit-content;*/
+    /*width: 100%;*/
+    width: auto !important;
     gap: 8px !important;
     max-width: none !important; /* Remove o limite de 160px do PC */
-    width: 100% !important;
+    /* width: 100% !important; */
+    
   }
 
   /* Faz o botão Desfazer (ou o último) ocupar a linha toda se sobrar */
@@ -50,11 +59,18 @@ body {
     grid-column: span 1; /* Ou span 2 se quiser que ele fique sozinho na linha de baixo */
   }
 
-  .acoes button {
-    width: 100% !important;
-    height: 50px;
-    padding: 10px;
+  .acoes button, #btn-editor {
+    /* width: 100% !important; */    
+    /* height: 50px; */
+    width: 45px !important; /* Define um tamanho fixo confortável para o toque no celular */
+    height: 45px !important;    
+    aspect-ratio: 1 / 1;
+    padding: 8px;
     box-sizing: border-box;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;    
   }
 
   /* O container do Zoom também deve ficar lado a lado */
@@ -63,6 +79,30 @@ body {
     display: flex !important;
     gap: 4px;
   }
+
+  /* Alinha a seção principal para conter todos os elementos em uma linha horizontal */
+  #acoes {
+    display: flex !important;
+    flex-direction: row !important; /* Força tudo a ficar lado a lado */
+    justify-content: center !important; /* Centraliza o grupo inteiro na tela */
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  /* Garante que o contêiner do editor fique na mesma linha */
+  #container-acoes-editor {
+    display: flex !important;
+    width: auto !important;
+  }
+  
+  /* Padroniza o tamanho exato de toque de TODOS os 5 botões no celular */
+  .acoes button, #btn-editor {
+    width: 45px !important;
+    height: 45px !important;
+    flex: none !important; /* Impede deformações */
+  }  
+
 }
 
 .coluna {
@@ -137,6 +177,16 @@ h2 {
   flex-direction: column;
   gap: 10px;
   max-width: 160px;
+}
+
+.acoes button, #btn-editor {
+  width: min-content !important; /* Força a largura mínima baseada no caractere */
+  height: auto;
+  aspect-ratio: 1 / 1; /* Mantém o botão perfeitamente quadrado */
+  padding: 8px; /* Espaçamento interno padrão ao redor do ícone */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button {
@@ -299,13 +349,21 @@ td {
 /* Ajuste o layout pai para lidar com a coluna sumindo */
 .layout.sem-suspeitos {
   /*grid-template-columns: 0px 2fr 190px;*/
-  grid-template-columns: 0px 1fr 190px;
-  gap: 8px; /* Opcional: remove o gap para não sobrar espaço vazio */
+  /*grid-template-columns: 0px 1fr 190px;*/
+  grid-template-columns: 0px 1fr max-content;
+  gap: 16px; /* Opcional: remove o gap para não sobrar espaço vazio */
 }
 
 /* Quando a coluna de suspeitos tiver essa classe, ela some */
 #personagens.recolhido {
-  display: none;
+  display: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+/* Garante que o layout central use o alinhamento correto do espaço disponível */
+.layout.sem-suspeitos #conteudo {
+  justify-self: center; /* Mantém o mapa centralizado no novo espaço maior */
 }
 
 .seletor-cena {
@@ -495,18 +553,28 @@ td {
 }
 
 #conteudo {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centraliza a grade e os botões */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; /* Centraliza a grade e os botões */
   gap: 15px;
+  /*width: 100%;*/
+  /*width: fit-content;  Faz a borda encolher até encostar no mapa */
+  /*justify-self: center; Centraliza o mapa perfeitamente no espaço do meio */  
+  width: 100% !important; /* Força a seção a usar todo o espaço de 1fr sem cortar à esquerda */
+  box-sizing: border-box; 
+  justify-content: flex-start !important; 
 }
 
 .acoes-grade {
-  display: flex;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   /*width: 100%;*/
-  width: fit-content; 
+  width: fit-content !important;
   /*max-width: 400px;  Limita a largura para não ficarem esticados demais */
   gap: 10px;
+  margin: 16px auto 0 auto !important;
+  box-sizing: border-box;  
 }
 
 .acoes-grade button {
@@ -597,6 +665,12 @@ td {
   display: block; 
   width: fit-content; /* Impede que o container se expanda além da tabela */
   margin: 0 auto;  
+
+  border: 1px solid #ccc; /* Aplica a borda diretamente aqui */
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #ffffff; /* Fundo branco para isolar o mapa */
+  box-sizing: border-box;  
 }
 
 .legenda-ambiente {
@@ -705,17 +779,20 @@ td {
   display: flex;
   flex-direction: column;
   gap: 10px; /* Espaço entre o bloco comum e o bloco do editor */
+  justify-self: end; /* Fixa a coluna estritamente alinhada à direita do seu slot */
+  width: fit-content;  
 }
 
 /* Faz o botão do editor ocupar toda a largura disponível, como os outros */
 #container-acoes-editor {
   display: flex;
-  width: 100%;
+  /*width: 100%;*/
+   width: fit-content;
 }
 
 #btn-editor {
   flex: 1; /* Faz o botão esticar */
-  padding: 10px; /* Mantém o padding padrão que você já usa */
+  padding: 8px; /* Mantém o padding padrão que você já usa */
 }
 
 .topo-app {
@@ -799,4 +876,15 @@ td {
   width: 40px;
   height: 40px;
   border-width: 4px;
+}
+
+#btn-suspeitos, #btn-jogo, #btn-mudar-senha {
+  cursor: pointer;
+  user-select: none; /* Opcional: impede que o emoji seja selecionado como texto por acidente */
+}
+
+#conteudo.coluna {
+  border: none !important; /* Apaga a borda antiga de trás */
+  padding: 0 !important;   /* Zera o preenchimento que causava o desalinhamento */
+  background: transparent !important;
 }

@@ -11,10 +11,13 @@
   <header class="topo-app">
     <div id="cronometro">00:00</div>
     <div class="usuario-info">
-      <span id="btn-mudar-senha">🔑</span>
+      <span id="btn-suspeitos" title="Exibir ou Ocultar o Painel de Suspeitos">&#128269;</span>
+      <span id="btn-jogo" title="Exibir ou Ocultar os Controles do Jogo">&#128190;</span>
+
+      <span id="btn-mudar-senha" title="Alterar Senha do Usuário">🔑</span>
       <span id="nome-usuario">Buscando...</span>
       <span class="divisor">|</span>
-      <a href="#" id="btn-sair">Sair</a>
+      <a href="#" id="btn-sair" title="Encerrar Sessão">Sair</a>
     </div>
   </header>
 
@@ -29,9 +32,11 @@
         <div class="seletor-cena">
           <label for="select-cena">Cena:</label>
           <select id="select-cena">
+            <!--
             <option value="abcd-123">Conserto</option>
             <option value="efgh-456">Escritório</option>
             <option value="ijkl-789">Pizzaria</option>
+            -->
           </select>        
 
           <p id="campo-dica" style="font-style: italic; color: #666; margin: 10px 0; font-size: 14px;"></p>
@@ -85,13 +90,22 @@
 
     <section class="coluna" id="conteudo"> 
       <div>
+        <!--
         <table id="grade"></table>
-      </div>  
-      <div class="acoes-grade" id="btn-acoes-grade">
-        <button type="button" id="btn-grade-limpar">Reiniciar</button>
-        <button type="button" id="btn-grade-carregar">Carregar</button>
-        <button type="button" id="btn-grade-salvar">Salvar</button>
-      </div>
+        -->
+        <!-- NOVO WRAPPER: Isola o cálculo de posicionamento da grade -->
+         
+        <div id="wrapper-grade" style="position: relative; display: block; width: fit-content; margin: 0 auto;">
+          <table id="grade"></table>
+        </div>
+        
+        <div class="acoes-grade" id="btn-acoes-grade">
+          <button type="button" id="btn-grade-limpar">Reiniciar</button>
+          <button type="button" id="btn-grade-carregar">Carregar</button>
+          <button type="button" id="btn-grade-salvar">Salvar</button>
+        </div>
+      </div> 
+
       <div id="editor-grade" style="display: none;">
         <div class="seletor-editor-grade">
           <label for="select-acao-grade">Ação do Editor:</label>
@@ -112,10 +126,10 @@
 
     <section class="coluna" id="acoes">      
       <div class="acoes" id="container-acoes-comuns">        
-        <button type="button" id="btn-marcar">Marcar</button>
-        <button type="button" id="btn-definir">Definir</button>
-        <button type="button" id="btn-limpar">Limpar</button>
-        <button type="button" id="btn-desfazer">Desfazer</button>
+        <button type="button" id="btn-marcar" title="Marcar X">&#10006;</button>
+        <button type="button" id="btn-definir" title="Posicionar um Personagem">&#128204;</button>
+        <button type="button" id="btn-limpar" title="Apagar">&#128465;</button>
+        <button type="button" id="btn-desfazer" title="Desfazer">&#8617;</button>
         <!--
         <div class="acoes-zoom" style="display: none;">
           <button type="button" id="btn-zoom-out">-</button>
@@ -125,7 +139,7 @@
         -->
       </div>
       <div id="container-acoes-editor">
-          <button type="button" id="btn-editor">Editor</button>
+          <button type="button" id="btn-editor" title="Entrar no modo editor">&#9997;</button>
       </div>        
     </section>
   </div>
