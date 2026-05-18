@@ -972,7 +972,22 @@ td {
   /*transition: background-color 0.2s;*/
   transition: background-color 0.2s, border-color 0.2s;  
   border-radius: 4px;
+
+  position: relative;
 }
+
+/* Cria uma área invisível de clique de 20px ao redor da barra, facilitando o toque no iPad */
+#divisor-redimensionavel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -6px;
+  right: -6px;
+  cursor: col-resize;
+  z-index: 10;
+}
+  
 
 /* Destaca a barra sutilmente quando o usuário passa o mouse por cima */
 #divisor-redimensionavel:hover,
