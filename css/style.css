@@ -4,19 +4,33 @@ body {
 }
 
 .layout {
-  display: grid;
-  /*grid-template-columns: 1fr 2fr 190px;*/
-  /*grid-template-columns: 350px 1fr 190px; */
-  grid-template-columns: 350px 1fr max-content; 
-  gap: 16px;
+  display: grid;  
+  /*grid-template-columns: 350px 1fr max-content;*/
+  /*gap: 16px;*/
+
+  /* Substituímos os 350px fixos por uma variável controlada pelo JS */
+  grid-template-columns: var(--largura-personagens, 350px) max-content 1fr max-content;
+  gap: 0px; /* Zeramos o gap geral para a barra divisória encostar nas colunas */
+    
   padding: 16px;
   min-height: 100vh;
-  box-sizing: border-box;
-  
+  box-sizing: border-box;  
+}
+#personagens {
+  margin-right: 8px;
 }
 
 /* --- AJUSTE PARA CELULAR (Telas menores que 900px) --- */
 @media (max-width: 900px) {
+
+  #divisor-redimensionavel {
+    /* desativando a barra no mobile para nao quebrar*/
+    display: none !important;
+  }
+  #personagens {
+    margin-right: 0;
+  }  
+
   .layout {
     display: flex;
     flex-direction: column;
@@ -34,6 +48,7 @@ body {
   #conteudo {
     width: 100%;
     display: block;
+    margin-left: 0;
   }
 
 
@@ -119,18 +134,31 @@ h2 {
 
 #lista-suspeitos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 100px));
+  --escala-card: 1;
+  /*grid-template-columns: repeat(auto-fill, minmax(100px, 100px));*/
+  grid-template-columns: repeat(auto-fill, minmax(calc(100px * var(--escala-card)), calc(100px * var(--escala-card))));
   gap: 8px;
+  /*--tamanho-base-fonte: 12px;*/  
+  padding: 10px;
+  width: 100%;  
 }
 
 .suspeito-card {
-  width: 100px;
+  /*width: 100px;
+  padding: 6px;*/  
+  width: calc(100px * var(--escala-card));
+  padding: calc(8px * var(--escala-card));  
   border: 2px solid #bcbcbc;
-  border-radius: 8px;
-  padding: 6px;
+  border-radius: 8px;  
   cursor: pointer;
   background: #f7f7f7;
   box-sizing: border-box;
+}
+
+.suspeito-img {
+  /* Ajusta a imagem proporcionalmente */
+  width: calc(80px * var(--escala-card));
+  height: calc(80px * var(--escala-card));  
 }
 
 .suspeito-card.selecionado {
@@ -152,15 +180,20 @@ h2 {
   border-radius: 4px;
 }
 
-.suspeito-nome {
-  margin-top: 6px;
+.suspeito-nome {  
   font-weight: 700;
-  font-size: 12px;
+  /*margin-top: 6px;*/
+  /*font-size: 12px;*/
+  /*font-size: var(--tamanho-base-fonte);*/
+  margin-top: calc(6px * var(--escala-card));
+  font-size: calc(12px * var(--escala-card));  
 }
 
 .suspeito-dica {
   margin-top: 4px;
-  font-size: 11px;
+  /*font-size: 11px;*/
+  /*font-size: calc(var(--tamanho-base-fonte) - 1px);*/
+  font-size: calc(10px * var(--escala-card));
 }
 /* Destaca as tags <b> dentro da dica do card */
 .suspeito-dica b {
@@ -391,11 +424,38 @@ td {
 }
 
 #personagens h1 {
-  font-size: 20px; 
-  margin: 15px 0 10px 0;
+  font-size: 16px; 
+  /*margin: 5px 0 5px 0;*/
+  margin: 0 !important;
   color: #333;
-  border-bottom: 2px solid #eee; 
+  /*border-bottom: 2px solid #eee; 
   padding-bottom: 5px;
+  */
+  border-bottom: none !important;   
+  padding-bottom: 0 !important;  
+}
+
+.botoes-fonte {
+  display: flex;
+  gap: 4px;
+}
+
+.botoes-fonte button {
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  font-weight: bold;
+  height: 26px !important;
+  width: auto !important;
+  aspect-ratio: auto !important; /* Sobrescreve o formato quadrado dos botões de ação */
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.botoes-fonte button:hover {
+  background-color: #f0f0f0;
+  border-color: #adadad;
 }
 
 .editor-controle-dimensao {
@@ -563,6 +623,8 @@ td {
   width: 100% !important; /* Força a seção a usar todo o espaço de 1fr sem cortar à esquerda */
   box-sizing: border-box; 
   justify-content: flex-start !important; 
+
+  margin-left: 8px;
 }
 
 .acoes-grade {
@@ -878,7 +940,7 @@ td {
   border-width: 4px;
 }
 
-#btn-suspeitos, #btn-jogo, #btn-mudar-senha {
+#btn-suspeitos, #btn-jogo, #btn-mudar-senha, #btn-cena {
   cursor: pointer;
   user-select: none; /* Opcional: impede que o emoji seja selecionado como texto por acidente */
 }
@@ -887,4 +949,42 @@ td {
   border: none !important; /* Apaga a borda antiga de trás */
   padding: 0 !important;   /* Zera o preenchimento que causava o desalinhamento */
   background: transparent !important;
+}
+
+/* Estilização da barra arrastável */
+#divisor-redimensionavel {
+  width: 8px;
+  cursor: col-resize; /* Muda o cursor para setas laterais de redimensionamento */
+  /*background-color: transparent;*/
+  background-color: #e0e0e0;
+  border-left: 1px solid #ccc; /* Linhas sútis nas laterais para dar profundidade */
+  border-right: 1px solid #ccc;  
+  /*transition: background-color 0.2s;*/
+  transition: background-color 0.2s, border-color 0.2s;  
+  border-radius: 4px;
+}
+
+/* Destaca a barra sutilmente quando o usuário passa o mouse por cima */
+#divisor-redimensionavel:hover,
+#divisor-redimensionavel.arrastando {
+  background-color: #76c7ff; /* Mesma cor de destaque que você usa nos cards */
+  border-left-color: #55b2f0; /* Escurece levemente as bordas no destaque */
+  border-right-color: #55b2f0;  
+}
+
+#campo-dica {  
+  margin: 10px 0 0 0 !important; 
+}
+
+#wrapper-seletor-cena.oculto {
+  display: none !important;
+}
+
+.titulo-suspeitos-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0 10px 0;
+  border-bottom: 2px solid #eee; /* A borda antiga do H1 agora fica no container */
+  padding-bottom: 5px;
 }
