@@ -107,7 +107,7 @@ body {
 
   /* Garante que o contêiner do editor fique na mesma linha */
   #container-acoes-editor {
-    display: flex !important;
+    display: flex; 
     width: auto !important;
   }
   
@@ -271,14 +271,18 @@ table {
   border-collapse: collapse;  
   table-layout: fixed; 
   width: auto !important; 
-  min-width: fit-content !important;  
+  min-width: fit-content !important; 
+  --tamanho-tile: 32px; /*variável do zoom aqui com o valor padrão de 32px */ 
 }
 
-td {
-  /* border passou a ser controlado pelo js */
-  /* border: 2px solid #000; */
-  width: 32px;
-  height: 32px;
+td {  
+  /*width: 32px;
+  height: 32px;*/
+  width: var(--tamanho-tile) !important;
+  height: var(--tamanho-tile) !important;
+  min-width: var(--tamanho-tile) !important;
+  max-width: var(--tamanho-tile) !important;  
+
   box-sizing: border-box;
   padding: 0;
   border: none;
@@ -291,12 +295,18 @@ td {
 #grade td {
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 
   /* Garante o formato quadrado custe o que custar */
-  width: 32px !important;
+  /*width: 32px !important;
   height: 32px !important;
   min-width: 32px !important;
   max-width: 32px !important;
+  */
+  width: var(--tamanho-tile) !important;
+  height: var(--tamanho-tile) !important;
+  min-width: var(--tamanho-tile) !important;
+  max-width: var(--tamanho-tile) !important;    
   box-sizing: border-box;  
 }
 
@@ -847,7 +857,7 @@ td {
 
 /* Faz o botão do editor ocupar toda a largura disponível, como os outros */
 #container-acoes-editor {
-  display: flex;
+  display: none;
   /*width: 100%;*/
    width: fit-content;
 }
