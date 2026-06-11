@@ -46,6 +46,7 @@ body {
   }
 
   #conteudo {
+    min-width: 0;
     width: 100%;
     display: block;
     margin-left: 0;
@@ -656,15 +657,6 @@ td {
   white-space: nowrap;
 }
 
-#editor-grade {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border-top: 1px solid #ddd;
-  box-sizing: border-box;
-  display: none;
-}
-
 .seletor-editor-grade {
   display: flex;
   flex-direction: column;
@@ -700,6 +692,19 @@ td {
   flex-wrap: wrap;
   gap: 5px;
   justify-content: flex-start;
+  width: 100%;           
+  box-sizing: border-box;  
+}
+
+#editor-grade {  
+  width: max-content;
+  max-width: 90%;  
+  margin: 10px auto 0 auto;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  box-sizing: border-box;
+  display: none;
+  overflow: hidden;
 }
 
 .btn-piso-seletor, .btn-item-seletor {
